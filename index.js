@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 import PendingAPI from "./service/PendingNotifyAPI.js";
-const http = require("http").Server(app);
+
 
 const io = new Server({
   cors: {
@@ -141,4 +141,6 @@ io.on("connection", (socket) => {
   });
 });
 
-http.listen(4000);
+io.listen(4000, () => {
+  console.log("Server is listening on port 4000");
+});
