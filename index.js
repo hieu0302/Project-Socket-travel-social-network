@@ -1,10 +1,10 @@
 import { Server } from "socket.io";
 import PendingAPI from "./service/PendingNotifyAPI.js";
+const http = require("http").Server(app);
 
 const io = new Server({
   cors: {
     origin: "https://project-client-travel-social-network.vercel.app/",
-    
   },
 });
 
@@ -132,7 +132,7 @@ io.on("connection", (socket) => {
         createPending(dataSendComment);
         return;
       }
-      createPending(dataSendComment)
+      createPending(dataSendComment);
     }
   );
 
@@ -141,4 +141,4 @@ io.on("connection", (socket) => {
   });
 });
 
-io.listen(4000);
+http.listen(4000);
