@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 
-const BASE_API_URL = "http://localhost:3001/api/v1";
+const BASE_API_URL = "https://trip-social.onrender.com/api/v1";
 
 const api = axios.create({
     baseURL: BASE_API_URL,
@@ -10,3 +10,5 @@ const api = axios.create({
   });
 
   export default api;
+
+  // http://localhost:3001/api/v1
