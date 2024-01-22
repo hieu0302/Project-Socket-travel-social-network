@@ -4,7 +4,7 @@ import PendingAPI from "./service/PendingNotifyAPI.js";
 
 const io = new Server({
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://project-client-travel-social-network.vercel.app",
   },
 });
 
