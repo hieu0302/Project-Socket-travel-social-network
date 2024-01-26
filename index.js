@@ -3,13 +3,7 @@ import PendingAPI from "./service/PendingNotifyAPI.js";
 
 const io = new Server({
   cors: {
-<<<<<<< HEAD
-    origin: "https://project-client-travel-social-network.vercel.app"
-    
-=======
-    origin: "https://project-client-travel-social-network.vercel.app",
->>>>>>> 1668c56aa8af77db2ca9077f0900c4de195bb4aa
-  },
+    origin: "https://project-client-travel-social-network.vercel.app" },
 });
 
 // "http://localhost:5173"
