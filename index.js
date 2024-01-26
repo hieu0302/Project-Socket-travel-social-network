@@ -1,16 +1,17 @@
 import { Server } from "socket.io";
 import PendingAPI from "./service/PendingNotifyAPI.js";
 
-
 const io = new Server({
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://project-client-travel-social-network.vercel.app"
+    
   },
 });
 
 // "http://localhost:5173"
+// "https://project-client-travel-social-network.vercel.app"
 
-let onlineUsers = [];
+let  onlineUsers = []
 let DataPending = [];
 
 const addNewUser = (userId, sockedId) => {
@@ -22,12 +23,9 @@ const removeUser = (socketId) => {
   onlineUsers = onlineUsers.filter((user) => user.socketId !== socketId);
 };
 
-const getUser = (userId) => {
-  return onlineUsers.find((user) => user.userId === userId);
-};
+const getUser = (userId) => onlineUsers.find((user) => user.userId === userId);
 
 const createPending = async (data) => {
-  console.log("OK", data);
   const newPending = {
     senderName: data.senderName,
     titlePost: data.titlePost,
@@ -36,6 +34,9 @@ const createPending = async (data) => {
     type: data.type,
     pending: data.pending,
     comment: data.comment,
+    text: data.text,
+    idRoomChat: data.idRoomChat
+
   };
   try {
     await PendingAPI.createPending(newPending);
@@ -56,7 +57,7 @@ io.on("connection", (socket) => {
         try {
           const result = await PendingAPI.getPending(userId);
           const dataPending = result.data;
-          console.log("KQ", dataPending);
+          
           if (dataPending) {
             DataPending.push({
               dataPending,
@@ -64,7 +65,7 @@ io.on("connection", (socket) => {
             io.to(socket.id).emit("SendPending", {
               dataPending,
             });
-            console.log("SOCKET", socket.id);
+            
           }
         } catch (error) {
           console.log(error);
@@ -77,9 +78,50 @@ io.on("connection", (socket) => {
   });
 
   socket.on(
+    "sendMessage",
+    ({
+      idSender,
+      text,
+      idRoomChat,
+      nameSender,
+      idReceiver,
+      nameReceiver,
+      createdAt,
+      avatarSender
+    }) => {
+      const sendUserSocket = getUser(idReceiver)
+      console.log("SEND", sendUserSocket);
+      const dataSendMessage = {
+        idSender,
+        text,
+        idRoomChat,
+        nameSender,
+        idReceiver,
+        nameReceiver,
+        createdAt,
+        avatarSender,
+        type: "message",
+        pending: false,
+      };
+      if (sendUserSocket) {
+        
+       io.to(sendUserSocket.socketId).emit("getMessage", {
+          dataSendMessage,
+        });
+        console.log("RUNNNN.....", dataSendMessage);
+        createPending(dataSendMessage);
+        return;
+      }
+
+      createPending(dataSendMessage);
+    }
+  );
+
+  socket.on(
     "sendLike",
     ({ senderName, receiverName, idReceiver, idSender, titlePost, idPost }) => {
       const receiver = getUser(idReceiver);
+
       const dataSendLike = {
         senderName,
         titlePost,
@@ -98,7 +140,7 @@ io.on("connection", (socket) => {
         createPending(dataSendLike);
         return;
       }
-
+      console.log("Heheheh:::", receiver);
       createPending(dataSendLike);
     }
   );
@@ -115,7 +157,7 @@ io.on("connection", (socket) => {
       comment,
     }) => {
       const receiver = getUser(idReceiver);
-      console.log("Heheheh:::", receiver);
+
       const dataSendComment = {
         senderName,
         titlePost,
@@ -136,11 +178,15 @@ io.on("connection", (socket) => {
     }
   );
 
+
+
   socket.on("disconnect", () => {
     removeUser(socket.id);
   });
 });
 
-io.listen(4000, () => {
-  console.log("Server is listening on port 4000");
+io.listen(8080, () => {
+  console.log("Server is listening on port 8080");
 });
+
+// https://trip-social-socket.onrender.com
